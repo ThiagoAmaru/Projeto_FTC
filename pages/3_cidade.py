@@ -1,7 +1,12 @@
 import pandas as pd
 
+import streamlit as st
+
+
+st.header("Fome Zero")
+
 # importa os dados
-df = pd.read_csv("dataset/zomato.csv")
+df = pd.read_csv("../dataset/zomato.csv")
 
 # criando cópia para preservar o dataset original
 df1 = df.copy()

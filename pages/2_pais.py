@@ -1,8 +1,13 @@
 import pandas as pd
-from main import country_name
+from library import country_name
+
+import streamlit as st
+
+
+st.header("Fome Zero")
 
 # importa os dados
-df = pd.read_csv("dataset/zomato.csv")
+df = pd.read_csv("../dataset/zomato.csv")
 
 # criando cópia para preservaar o dataset original
 df1 = df.copy()
@@ -14,7 +19,7 @@ df1 = df.copy()
 # Ordena os Valores por Cidade, o ascending = False organiza em ordem decrescente, o metodo head retorna os primeiros elementos
 var = df1.loc[: , ['Country Code', 'City']].groupby('Country Code').count().reset_index().sort_values('City', ascending= False).head(1)
 #chama a função e localiza o primeiro elemento da primeira coluna, que será o codigo do país e retorna o nome do país
-country_name(var.iloc[0, 0])
+print(country_name(var.iloc[0, 0]))
 
 
 # 2. Qual o nome do país que possui mais restaurantes registrados?
