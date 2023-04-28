@@ -1,5 +1,5 @@
 import pandas as pd
-from main import country_name
+from funcoes import country_name
 
 # importa os dados
 df = pd.read_csv("dataset/zomato.csv")
