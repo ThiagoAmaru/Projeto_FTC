@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from funcoes import country_name
 
 # importa os dados
 df = pd.read_csv("dataset/zomato.csv")
@@ -7,43 +8,15 @@ df = pd.read_csv("dataset/zomato.csv")
 # criando cópia para preservaar o dataset original
 df1 = df.copy()
 
-###### LIMPEZA DOS DADOS ######
-
-# Coloca os codigos dos paises como chave de um dicionario e os nomes como os valores
-COUNTRIES = {
-1: "India",
-14: "Australia",
-30: "Brazil",
-37: "Canada",
-94: "Indonesia",
-148: "New Zeland",
-162: "Philippines",
-166: "Qatar",
-184: "Singapure",
-189: "South Africa",
-191: "Sri Lanka",
-208: "Turkey",
-214: "United Arab Emirates",
-215: "England",
-216: "United States of America",
-}
-
-# Função que recebe o valor do codigo do país, vai até o dicionario COUNTRIES e retorna o nome do pais(valor) a partir do codigo(chave)
-def country_name(country_id):
-    return COUNTRIES[country_id]
+#aux = df1.loc[: , ["Country Code", "City"]].groupby('Country Code').agg({ "City" : ['nunique' , 'count'] }).reset_index()
 
 
-# Metodo para atualizar a coluna, de modo que ela apresente apenas o primeiro valor
-# Os inputs são o nome do datafrime e da coluna que sofrerá a alteracão
-def apenas_primeiro_valor( dataframe, coluna):
-    dataframe[coluna] = dataframe.loc[:, coluna].apply(lambda x: x.split(",")[0] if isinstance(x, str) == True else str(x).split(",")[0])
-    return None
+#print(aux)
 
-# Mostra a maior quantidade de um de agrupamentos
-# Data Frame, int da quantidade de elementos que deseja, coluna por qual será agrupada, coluna que será agrupada
-# Essa função retornará um gráfico de barras
 
-def mostra_maior_quantidade(dataframe, n_var, nome_coluna_x, nome_coluna_y):
+
+def mostra(dataframe, n_var, nome_coluna_x, nome_coluna_y):
+    
     
     # Agrupa as colunas pelo codigo do pais, ver a quantidade de elementos dentro "Country Code", reseta o index
     aux = dataframe.loc[: , [nome_coluna_x, nome_coluna_y]].groupby(nome_coluna_x).nunique().reset_index()
@@ -83,3 +56,5 @@ def mostra_maior_quantidade(dataframe, n_var, nome_coluna_x, nome_coluna_y):
     ax.set_ylabel('O que o grafico quer quantitativamente')
     ax.set_title(' Titulo do Grafico')
     return plt.show()
+
+mostra(df1, 7, "Country Code", "City")

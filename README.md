@@ -16,4 +16,4 @@ Responder as perguntas de negócio
 
 4. Criar Dashboards
 
-5. limpar os dados desnecessários
+5. Subir utilizando o Streamlit

@@ -1,4 +1,5 @@
 import pandas as pd
+#import streamlit as st
 from funcoes import country_name
 
 # importa os dados
@@ -15,7 +16,6 @@ df1 = df.copy()
 var = df1.loc[: , ['Country Code', 'City']].groupby('Country Code').count().reset_index().sort_values('City', ascending= False).head(1)
 #chama a função e localiza o primeiro elemento da primeira coluna, que será o codigo do país e retorna o nome do país
 country_name(var.iloc[0, 0])
-
 
 # 2. Qual o nome do país que possui mais restaurantes registrados?
 
@@ -81,3 +81,9 @@ country_name(var.iloc[0, 0])
 aux = df1.loc[: , ['Average Cost for two', 'Country Code']].groupby('Country Code').mean().reset_index()
 aux['Country Code'] = aux['Country Code'].apply(lambda x : country_name(x)) 
 aux.sort_values('Average Cost for two', ascending= True)
+
+# Començando a desenvolver o stremlit
+
+#st.header("Será que deu certo?")
+
+#st.sidebar.markdown("# Países")
