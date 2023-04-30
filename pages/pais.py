@@ -1,6 +1,6 @@
 import pandas as pd
-#import streamlit as st
-from funcoes import country_name
+import streamlit as st
+from funcoes import country_name, mostra_maior_quantidade
 
 # importa os dados
 df = pd.read_csv("dataset/zomato.csv")
@@ -84,6 +84,40 @@ aux.sort_values('Average Cost for two', ascending= True)
 
 # Començando a desenvolver o stremlit
 
-#st.header("Será que deu certo?")
+st.header("Será que deu certo?")
 
-#st.sidebar.markdown("# Países")
+st.sidebar.markdown("# Países")
+
+#copiando dataframe e botando em outra variavel
+df2 = df1.copy()
+
+#Tirando as  colunas que não serão utilizadas e criando um filtro de seleção unica
+df2 = df2.drop( columns= ['Country Code', 'Address','Locality', 'Locality Verbose', 'Longitude', 'Latitude','Rating color', 'Rating text' ])
+seletor_y = st.sidebar.selectbox("Quais as colunas serão analisadas", df2.columns)
+
+# criando um filtro de seleção multipla
+seletor_2 = st.sidebar.multiselect("filtros", ['Has Table booking', 'Has Online delivery', 'Is delivering now', 'Switch to order menu'])
+
+
+tab1 , tab2 = st.tabs(["Primeira Visão" , "Segunda Visão"])
+
+with tab1:
+    figura = mostra_maior_quantidade(df1, 30, "Country Code", seletor_y)
+    st.plotly_chart(figura, use_container_width = True)
+
+with tab2:
+    
+    filtro_seletor = df1.copy()
+    
+    if ('Has Table booking' in seletor_2) == True:
+        filtro_seletor = df1.loc[df1['Has Table booking'] == 1, ["Country Code", seletor_y]].reset_index()
+    if ('Has Online delivery' in seletor_2 )== True:
+        filtro_seletor = df1.loc[df1['Has Online delivery'] == 1, ["Country Code", seletor_y]].reset_index()
+    if ('Is delivering now' in seletor_2) == True:
+        filtro_seletor = df1.loc[df1['Is delivering now'] == 1, ["Country Code", seletor_y]].reset_index()
+    if ('Switch to order menu') in seletor_2 == True:
+        filtro_seletor = df1.loc[df1['Switch to order menu'] == 1, ["Country Code", seletor_y]].reset_index()
+
+    st.header(seletor_2)
+    figura2 = mostra_maior_quantidade(filtro_seletor, 30, "Country Code", seletor_y)
+    st.plotly_chart(figura2, use_container_width = True)

@@ -1,5 +1,6 @@
 import pandas as pd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
+import plotly.express as px
 
 # importa os dados
 df = pd.read_csv("dataset/zomato.csv")
@@ -70,16 +71,17 @@ def mostra_maior_quantidade(dataframe, n_var, nome_coluna_x, nome_coluna_y):
         j = var.iloc[i, 1]
         lista_aux2.append(j)
 
-    fig, ax = plt.subplots()
+    #fig, ax = plt.subplots()
 
     # Adicionar as barras
-    ax.bar(lista_aux1, lista_aux2)
+    fig = px.bar(df1, x= lista_aux1, y =lista_aux2)
+    return fig
 
     # Rotacionar os rótulos do eixo x em 90 graus
-    plt.xticks(rotation=90)
+    #plt.xticks(rotation=90)
 
     # Adicionar legendas e título / Atualizar essa parte
-    ax.set_xlabel('Chaves')
-    ax.set_ylabel('O que o grafico quer quantitativamente')
-    ax.set_title(' Titulo do Grafico')
-    return plt.show()
+    #ax.set_xlabel('Chaves')
+    #ax.set_ylabel('O que o grafico quer quantitativamente')
+    #ax.set_title(' Titulo do Grafico')
+    #return plt.show()

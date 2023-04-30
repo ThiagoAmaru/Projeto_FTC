@@ -8,12 +8,18 @@ df = pd.read_csv("dataset/zomato.csv")
 # criando cópia para preservaar o dataset original
 df1 = df.copy()
 
+testando_codigo = ['Has Table booking', 'Has Online delivery', 'Is delivering now', 'Switch to order menu']
+
+h = "Has Table book" in testando_codigo
+
+print(h)
+
 #aux = df1.loc[: , ["Country Code", "City"]].groupby('Country Code').agg({ "City" : ['nunique' , 'count'] }).reset_index()
 
 
 #print(aux)
 
-
+"""
 
 def mostra(dataframe, n_var, nome_coluna_x, nome_coluna_y):
     
@@ -58,3 +64,5 @@ def mostra(dataframe, n_var, nome_coluna_x, nome_coluna_y):
     return plt.show()
 
 mostra(df1, 7, "Country Code", "City")
+
+"""
