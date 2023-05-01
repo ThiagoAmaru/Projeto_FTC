@@ -1,4 +1,6 @@
 import pandas as pd
+import streamlit as st
+from funcoes import country_name, mostra_maior_quantidade, mostra_menor_quantidade, mostra_maior_media, mostra_menor_media
 
 # importa os dados
 df = pd.read_csv("dataset/zomato.csv")
@@ -6,55 +8,86 @@ df = pd.read_csv("dataset/zomato.csv")
 # criando cópia para preservar o dataset original
 df1 = df.copy()
 
-# 1. Qual o nome da cidade que possui mais restaurantes registrados?
-
-#Localiza as colunas, agrupa pelas cidades, soma a quantidade de restaurantes desonsiderando valores repetidos, reseta o index e ordena em ordem decrescente 
-aux = df1.loc[:,['City', 'Restaurant ID']].groupby('City').nunique().reset_index().sort_values('Restaurant ID', ascending = False).head(1)
-aux['City']
-
-# 2. Qual o nome da cidade que possui mais restaurantes com nota média acima de 4?
-
-# filtra as restrições
-filtro = df1.loc[df1['Aggregate rating'] > 4]
-aux = filtro.loc[: , [ 'City', 'Aggregate rating']].groupby('City').mean().reset_index().sort_values('Aggregate rating', ascending = False).head(1)
-aux['City']
 
 
-# 3. Qual o nome da cidade que possui mais restaurantes com nota média abaixo de 2.5?
+############################### Començando a desenvolver o stremlit ############################### 
 
-filtro = df1.loc[df1['Aggregate rating'] < 2.5]
-aux = filtro.loc[: , [ 'City', 'Aggregate rating']].groupby('City').mean().reset_index().sort_values('Aggregate rating', ascending = False).head(1)
-aux['City']
+#################################### SIDEBAR ######################################################
+
+st.header("Cidades")
+
+st.sidebar.markdown("# Cidades")
+
+#copiando dataframe e botando em outra variavel
+df2 = df1.copy()
+
+#Tirando as  colunas que não serão utilizadas e criando um filtro de seleção unica
+df2 = df2.drop( columns= ['City', 'Country Code' ,'Address','Locality', 'Locality Verbose', 'Longitude', 'Latitude','Rating color', 'Rating text', 'Currency','Has Table booking', 'Has Online delivery', 'Is delivering now', 'Switch to order menu' ])
+seletor_y = st.sidebar.selectbox("Escolha a coluna que será analisada", df2.columns)
+
+seletor_z = st.sidebar.selectbox("Voce deseja os maiores ou menores valores?", ['maiores' , 'menores'])
+
+seletor_x = st.sidebar.selectbox("Tipo de preços", ['sem restição', 'cheap','normal', 'expensive' , 'gourmet' ])
+
+# criando um filtro de seleção multipla
+
+seletor_2 = st.sidebar.multiselect("filtros", ['Has Table booking', 'Has Online delivery', 'Is delivering now', 'Switch to order menu'])
+
+############################################  Criando Tabs ############################################
+tab1 , tab2, tab3 = st.tabs(["Primeira Visão" , "Segunda Visão", "Terceira Visão"])
+
+with tab1:
+    filtro_seletor1 = df1.copy()
+
+    if ('cheap' in seletor_x) == True:
+        filtro_seletor1 = df1.loc[df1['Price range'] == 1].reset_index()
+
+    if ('normal' in seletor_x) == True:
+        filtro_seletor1 = df1.loc[df1['Price range'] == 2].reset_index()
+
+    if ('expensive' in seletor_x) == True:
+        filtro_seletor1 = df1.loc[df1['Price range'] == 3].reset_index()
+    
+    if ('gourmet' in seletor_x) == True:
+        filtro_seletor1 = df1.loc[df1['Price range'] == 4].reset_index()
+
+ #
+    filtro_seletor2 = df1.copy()
+    
+    if ('Has Table booking' in seletor_2) == True:
+        filtro_seletor2 = df1.loc[df1['Has Table booking'] == 1].reset_index()
+    if ('Has Online delivery' in seletor_2 )== True:
+        filtro_seletor2 = df1.loc[df1['Has Online delivery'] == 1].reset_index()
+    if ('Is delivering now' in seletor_2) == True:
+        filtro_seletor2 = df1.loc[df1['Is delivering now'] == 1].reset_index()
+    if ('Switch to order menu') in seletor_2 == True:
+        filtro_seletor2 = df1.loc[df1['Switch to order menu'] == 1].reset_index()
+
+    st.header('Filtros utilizados: ')
+    st.markdown(seletor_2)
+
+    st.title("Soma de Valores Unicos")
+
+    if (seletor_z == 'menores') == True:
+        figura = mostra_menor_quantidade(pd.merge(filtro_seletor1, filtro_seletor2, how='inner'), 30, "City", seletor_y)
+        st.plotly_chart(figura, use_container_width = True)
+    else:
+        figura = mostra_maior_quantidade(pd.merge(filtro_seletor1, filtro_seletor2, how='inner'), 30, "City", seletor_y)
+        st.plotly_chart(figura, use_container_width = True)
+
+    st.title("Médias")
+
+    if (seletor_z == 'menores') == True:
+        figura = mostra_menor_media(pd.merge(filtro_seletor1, filtro_seletor2, how='inner'), 30, "City", seletor_y)
+        st.plotly_chart(figura, use_container_width = True)
+    else:
+        figura = mostra_maior_media(pd.merge(filtro_seletor1, filtro_seletor2, how='inner'), 30, "City", seletor_y)
+        st.plotly_chart(figura, use_container_width = True)
+
+with tab2:
+        st.header('Respondendo perguntas de negócio')
+with tab3:
+        st.header('mapas')
 
 
-# 4. Qual o nome da cidade que possui o maior valor médio de um prato para dois?
-
-aux = df1.loc[: , ['Aggregate rating', 'City']].groupby("City").mean().reset_index().sort_values("Aggregate rating", ascending = False).head(1)
-aux['City']
-
-
-# 5. Qual o nome da cidade que possui a maior quantidade de tipos de culinária distintas?
-
-aux = df1.loc[: , ['Cuisines', 'City']].groupby("City").nunique().reset_index().sort_values("Cuisines", ascending = False).head(1)
-aux['City']
-
-
-# 6. Qual o nome da cidade que possui a maior quantidade de restaurantes que fazem reservas?
-
-
-filtro = df1.loc[df1['Has Table booking'] == 1]
-aux = filtro.loc[: , ['City', 'Restaurant ID']].groupby('City').count().reset_index().sort_values('Restaurant ID', ascending= False).head(1)
-aux['City']
-
-# 7. Qual o nome da cidade que possui a maior quantidade de restaurantes que fazem entregas?
-
-filtro = df1.loc[(df1['Is delivering now'] == 1) | (df1['Has Online delivery'] == 1)]
-aux = filtro.loc[: , ['City' , 'Restaurant ID' ]].groupby('City').count().reset_index().sort_values('Restaurant ID', ascending= False).head(1)
-aux['City']
-
-
-# 8. Qual o nome da cidade que possui a maior quantidade de restaurantes que aceitam pedidos online?
-
-filtro = df1.loc[(df1['Has Online delivery'] == 1)]
-aux = filtro.loc[: , ['City' , 'Restaurant ID' ]].groupby('City').count().reset_index().sort_values('Restaurant ID', ascending= False).head(1)
-aux['City']
+        

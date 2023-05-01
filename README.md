@@ -17,3 +17,7 @@ Responder as perguntas de negócio
 4. Criar Dashboards
 
 5. Subir utilizando o Streamlit
+
+6. Tratar parte das médias
+
+7. criar novas funcionalidade
