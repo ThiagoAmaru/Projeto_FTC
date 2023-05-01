@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from funcoes import country_name, mostra_maior_quantidade
+from funcoes import country_name, mostra_maior_quantidade, mostra_menor_quantidade
 
 # importa os dados
 df = pd.read_csv("dataset/zomato.csv")
@@ -82,9 +82,11 @@ aux = df1.loc[: , ['Average Cost for two', 'Country Code']].groupby('Country Cod
 aux['Country Code'] = aux['Country Code'].apply(lambda x : country_name(x)) 
 aux.sort_values('Average Cost for two', ascending= True)
 
-# Començando a desenvolver o stremlit
+############################### Començando a desenvolver o stremlit ############################### 
 
-st.header("Será que deu certo?")
+#################################### SIDEBAR ######################################################
+
+st.header("Países")
 
 st.sidebar.markdown("# Países")
 
@@ -92,22 +94,36 @@ st.sidebar.markdown("# Países")
 df2 = df1.copy()
 
 #Tirando as  colunas que não serão utilizadas e criando um filtro de seleção unica
-df2 = df2.drop( columns= ['Country Code', 'Address','Locality', 'Locality Verbose', 'Longitude', 'Latitude','Rating color', 'Rating text' ])
-seletor_y = st.sidebar.selectbox("Quais as colunas serão analisadas", df2.columns)
+df2 = df2.drop( columns= ['Country Code', 'Address','Locality', 'Locality Verbose', 'Longitude', 'Latitude','Rating color', 'Rating text', 'Currency','Has Table booking', 'Has Online delivery', 'Is delivering now', 'Switch to order menu' ])
+seletor_y = st.sidebar.selectbox("Escolha a coluna que será analisada", df2.columns)
+
+seletor_z = st.sidebar.selectbox("Voce deseja os maiores ou menores valores?", ['maiores' , 'menores'])
+
+seletor_x = st.sidebar.selectbox("filtros", ['sem restição', 'cheap','normal', 'expensive' , 'gourmet' ])
 
 # criando um filtro de seleção multipla
+
 seletor_2 = st.sidebar.multiselect("filtros", ['Has Table booking', 'Has Online delivery', 'Is delivering now', 'Switch to order menu'])
 
-
+############################################  Criando Tabs ############################################
 tab1 , tab2 = st.tabs(["Primeira Visão" , "Segunda Visão"])
 
 with tab1:
-    figura = mostra_maior_quantidade(df1, 30, "Country Code", seletor_y)
-    st.plotly_chart(figura, use_container_width = True)
-
-with tab2:
-    
     filtro_seletor = df1.copy()
+
+    if ('cheap' in seletor_x) == True:
+        filtro_seletor = df1.loc[df1['Price range'] == 1].reset_index()
+
+    if ('normal' in seletor_x) == True:
+        filtro_seletor = df1.loc[df1['Price range'] == 2].reset_index()
+
+    if ('expensive' in seletor_x) == True:
+        filtro_seletor = df1.loc[df1['Price range'] == 3].reset_index()
+    
+    if ('gourmet' in seletor_x) == True:
+        filtro_seletor = df1.loc[df1['Price range'] == 4].reset_index()
+
+ #filtrs
     
     if ('Has Table booking' in seletor_2) == True:
         filtro_seletor = df1.loc[df1['Has Table booking'] == 1, ["Country Code", seletor_y]].reset_index()
@@ -118,6 +134,15 @@ with tab2:
     if ('Switch to order menu') in seletor_2 == True:
         filtro_seletor = df1.loc[df1['Switch to order menu'] == 1, ["Country Code", seletor_y]].reset_index()
 
+    st.header('Filtros utilizados: ')
     st.header(seletor_2)
-    figura2 = mostra_maior_quantidade(filtro_seletor, 30, "Country Code", seletor_y)
-    st.plotly_chart(figura2, use_container_width = True)
+
+    if (seletor_z == 'menores') == True:
+        figura = mostra_menor_quantidade(filtro_seletor, 30, "Country Code", seletor_y)
+        st.plotly_chart(figura, use_container_width = True)
+    else:
+        figura = mostra_maior_quantidade(filtro_seletor, 30, "Country Code", seletor_y)
+        st.plotly_chart(figura, use_container_width = True)
+
+with tab2:
+        st.header(seletor_2)

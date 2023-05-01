@@ -8,6 +8,10 @@ df = pd.read_csv("dataset/zomato.csv")
 # criando cópia para preservaar o dataset original
 df1 = df.copy()
 
+print(df1['Price range'].unique())
+
+
+"""
 testando_codigo = ['Has Table booking', 'Has Online delivery', 'Is delivering now', 'Switch to order menu']
 
 h = "Has Table book" in testando_codigo
@@ -19,7 +23,7 @@ print(h)
 
 #print(aux)
 
-"""
+
 
 def mostra(dataframe, n_var, nome_coluna_x, nome_coluna_y):
     
